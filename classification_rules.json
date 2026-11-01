@@ -1,0 +1,470 @@
+{
+  "version": 1,
+  "priority": [
+    "override",
+    "code_range",
+    "keyword",
+    "first_digit"
+  ],
+  "code_digits": 4,
+  "code_ranges": [
+    {
+      "from": 1000,
+      "to": 1499,
+      "sub_category": "Non-Current Assets"
+    },
+    {
+      "from": 1500,
+      "to": 1599,
+      "sub_category": "Inventory"
+    },
+    {
+      "from": 1600,
+      "to": 1699,
+      "sub_category": "Trade Receivables"
+    },
+    {
+      "from": 1700,
+      "to": 1799,
+      "sub_category": "Other Current Assets"
+    },
+    {
+      "from": 1800,
+      "to": 1999,
+      "sub_category": "Cash & Bank"
+    },
+    {
+      "from": 2000,
+      "to": 2099,
+      "sub_category": "Trade Payables"
+    },
+    {
+      "from": 2100,
+      "to": 2199,
+      "sub_category": "Tax Payable"
+    },
+    {
+      "from": 2200,
+      "to": 2299,
+      "sub_category": "Borrowings - Current"
+    },
+    {
+      "from": 2300,
+      "to": 2499,
+      "sub_category": "Other Current Liabilities"
+    },
+    {
+      "from": 2500,
+      "to": 2999,
+      "sub_category": "Non-Current Liabilities"
+    },
+    {
+      "from": 3000,
+      "to": 3099,
+      "sub_category": "Share Capital"
+    },
+    {
+      "from": 3100,
+      "to": 3199,
+      "sub_category": "Other Reserves"
+    },
+    {
+      "from": 3200,
+      "to": 3999,
+      "sub_category": "Retained Earnings"
+    },
+    {
+      "from": 4000,
+      "to": 4799,
+      "sub_category": "Revenue"
+    },
+    {
+      "from": 4800,
+      "to": 4999,
+      "sub_category": "Other Income"
+    },
+    {
+      "from": 5000,
+      "to": 5999,
+      "sub_category": "Cost of Sales"
+    },
+    {
+      "from": 6000,
+      "to": 6299,
+      "sub_category": "Staff Costs"
+    },
+    {
+      "from": 6300,
+      "to": 7499,
+      "sub_category": "Operating Expenses"
+    },
+    {
+      "from": 7500,
+      "to": 7699,
+      "sub_category": "Depreciation & Amortisation"
+    },
+    {
+      "from": 7700,
+      "to": 7899,
+      "sub_category": "Finance Costs"
+    },
+    {
+      "from": 7900,
+      "to": 7999,
+      "sub_category": "Income Tax"
+    },
+    {
+      "from": 8000,
+      "to": 9999,
+      "sub_category": "Operating Expenses"
+    }
+  ],
+  "keywords": [
+    {
+      "keywords": [
+        "accumulated depreciation",
+        "accumulated amortisation",
+        "accumulated amortization",
+        "provision for depreciation",
+        "acc. dep",
+        "acc dep"
+      ],
+      "sub_category": "Non-Current Assets"
+    },
+    {
+      "keywords": [
+        "depreciation",
+        "amortisation",
+        "amortization",
+        "impairment"
+      ],
+      "sub_category": "Depreciation & Amortisation"
+    },
+    {
+      "keywords": [
+        "corporation tax expense",
+        "income tax expense",
+        "tax charge",
+        "deferred tax expense",
+        "current tax expense"
+      ],
+      "sub_category": "Income Tax"
+    },
+    {
+      "keywords": [
+        "corporation tax payable",
+        "income tax payable",
+        "tax payable",
+        "instalment tax",
+        "installment tax",
+        "corporation tax"
+      ],
+      "sub_category": "Tax Payable"
+    },
+    {
+      "keywords": [
+        "interest expense",
+        "interest paid",
+        "interest on loan",
+        "loan interest",
+        "overdraft interest",
+        "finance cost",
+        "finance charge",
+        "interest on overdraft",
+        "lease interest"
+      ],
+      "sub_category": "Finance Costs"
+    },
+    {
+      "keywords": [
+        "interest income",
+        "interest received",
+        "dividend income",
+        "gain on disposal",
+        "exchange gain",
+        "forex gain",
+        "rental income",
+        "other income",
+        "sundry income",
+        "commission income",
+        "discount received"
+      ],
+      "sub_category": "Other Income"
+    },
+    {
+      "keywords": [
+        "overdraft",
+        "short term loan",
+        "short-term loan",
+        "current portion"
+      ],
+      "sub_category": "Borrowings - Current"
+    },
+    {
+      "keywords": [
+        "long term loan",
+        "long-term loan",
+        "term loan",
+        "bank loan",
+        "debenture",
+        "lease liability",
+        "deferred tax liability",
+        "director loan",
+        "directors loan",
+        "shareholder loan"
+      ],
+      "sub_category": "Non-Current Liabilities"
+    },
+    {
+      "keywords": [
+        "bank charges",
+        "bank fees",
+        "transaction charges"
+      ],
+      "sub_category": "Operating Expenses"
+    },
+    {
+      "keywords": [
+        "staff advance",
+        "salary advance",
+        "vat receivable",
+        "input vat",
+        "withholding tax receivable",
+        "wht receivable",
+        "prepayment",
+        "prepaid"
+      ],
+      "sub_category": "Other Current Assets"
+    },
+    {
+      "keywords": [
+        "cash",
+        "bank",
+        "m-pesa",
+        "mpesa",
+        "petty cash",
+        "float"
+      ],
+      "sub_category": "Cash & Bank"
+    },
+    {
+      "keywords": [
+        "salaries",
+        "salary",
+        "wages",
+        "payroll",
+        "staff",
+        "nssf",
+        "nhif",
+        "shif",
+        "housing levy",
+        "gratuity",
+        "pension",
+        "leave pay",
+        "bonus",
+        "allowance",
+        "medical cover",
+        "staff welfare",
+        "casual labour",
+        "casuals"
+      ],
+      "sub_category": "Staff Costs"
+    },
+    {
+      "keywords": [
+        "cost of sales",
+        "cost of goods",
+        "purchases",
+        "raw material",
+        "direct labour",
+        "direct labor",
+        "factory overhead",
+        "freight inward",
+        "carriage inward",
+        "production",
+        "consumables used"
+      ],
+      "sub_category": "Cost of Sales"
+    },
+    {
+      "keywords": [
+        "sales",
+        "revenue",
+        "turnover",
+        "fees earned",
+        "service income",
+        "income from"
+      ],
+      "sub_category": "Revenue"
+    },
+    {
+      "keywords": [
+        "inventory",
+        "stock",
+        "work in progress",
+        "wip",
+        "goods in transit",
+        "finished goods"
+      ],
+      "sub_category": "Inventory"
+    },
+    {
+      "keywords": [
+        "debtors",
+        "receivable",
+        "trade debtors",
+        "accounts receivable",
+        "customer"
+      ],
+      "sub_category": "Trade Receivables"
+    },
+    {
+      "keywords": [
+        "prepayment",
+        "prepaid",
+        "deposit paid",
+        "advance to",
+        "vat receivable",
+        "input vat",
+        "withholding tax receivable",
+        "wht receivable",
+        "staff advance",
+        "other receivable"
+      ],
+      "sub_category": "Other Current Assets"
+    },
+    {
+      "keywords": [
+        "creditors",
+        "payable",
+        "accounts payable",
+        "trade creditors",
+        "supplier"
+      ],
+      "sub_category": "Trade Payables"
+    },
+    {
+      "keywords": [
+        "accrual",
+        "accrued",
+        "vat payable",
+        "output vat",
+        "paye",
+        "withholding tax payable",
+        "wht payable",
+        "deferred income",
+        "customer deposit",
+        "dividend payable",
+        "provision"
+      ],
+      "sub_category": "Other Current Liabilities"
+    },
+    {
+      "keywords": [
+        "share capital",
+        "ordinary shares",
+        "paid up capital",
+        "issued capital"
+      ],
+      "sub_category": "Share Capital"
+    },
+    {
+      "keywords": [
+        "retained earnings",
+        "retained profit",
+        "accumulated profit",
+        "accumulated loss",
+        "profit and loss account",
+        "revenue reserve"
+      ],
+      "sub_category": "Retained Earnings"
+    },
+    {
+      "keywords": [
+        "reserve",
+        "revaluation",
+        "share premium",
+        "capital reserve"
+      ],
+      "sub_category": "Other Reserves"
+    },
+    {
+      "keywords": [
+        "land",
+        "building",
+        "plant",
+        "machinery",
+        "equipment",
+        "motor vehicle",
+        "furniture",
+        "fixtures",
+        "computer",
+        "intangible",
+        "goodwill",
+        "software",
+        "right of use",
+        "investment property",
+        "capital work in progress",
+        "leasehold"
+      ],
+      "sub_category": "Non-Current Assets"
+    },
+    {
+      "keywords": [
+        "loan",
+        "borrowing"
+      ],
+      "sub_category": "Non-Current Liabilities"
+    },
+    {
+      "keywords": [
+        "expense",
+        "rent",
+        "rates",
+        "electricity",
+        "water",
+        "utilities",
+        "marketing",
+        "advertising",
+        "transport",
+        "travel",
+        "fuel",
+        "repairs",
+        "maintenance",
+        "professional fees",
+        "audit fees",
+        "legal",
+        "consultancy",
+        "insurance",
+        "telephone",
+        "internet",
+        "office",
+        "printing",
+        "stationery",
+        "licence",
+        "license",
+        "subscription",
+        "security",
+        "cleaning",
+        "entertainment",
+        "donation",
+        "bad debt",
+        "penalt",
+        "commission",
+        "training"
+      ],
+      "sub_category": "Operating Expenses"
+    }
+  ],
+  "first_digit": {
+    "1": "Asset",
+    "2": "Liability",
+    "3": "Equity",
+    "4": "Income",
+    "5": "Expense",
+    "6": "Expense",
+    "7": "Expense",
+    "8": "Expense",
+    "9": "Expense"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "basis": "closing",
+  "budget_basis": "movement",
+  "budget_sign": "natural",
+  "fy_start_month": 1,
+  "numeric_month_is": "calendar",
+  "carry_forward_pl": true,
+  "units": 1,
+  "currency": "KES",
+  "default_company": "Company"
+}
