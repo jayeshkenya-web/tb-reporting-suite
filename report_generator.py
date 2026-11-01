@@ -28,8 +28,8 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-from utils.account_classifier import UNCLASSIFIED
-from utils.data_processing import NO_CC, period_label
+from account_classifier import UNCLASSIFIED
+from data_processing import NO_CC, period_label
 
 # --------------------------------------------------------------------------- #
 # Context
@@ -530,7 +530,7 @@ def schedule_of_accounts(ctx: ReportContext, scope: str = "YTD") -> pd.DataFrame
     df = pd.DataFrame({"Opening": open_, "Debits": dr, "Credits": cr, "Net Movement": mv,
                        "Closing": close}).fillna(0.0).reset_index()
     df = df[(df[["Opening", "Debits", "Credits", "Closing"]].abs().sum(axis=1)) > 0.005]
-    from utils.account_classifier import ALL_SUB_CATEGORIES
+    from account_classifier import ALL_SUB_CATEGORIES
     order = {s: i for i, s in enumerate(ALL_SUB_CATEGORIES)}
     out = []
     for sub in sorted(df["sub_category"].unique(), key=lambda s: order.get(s, 99)):

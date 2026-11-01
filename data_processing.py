@@ -49,9 +49,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from utils.account_classifier import CATEGORY_OF, PL_CATEGORIES, UNCLASSIFIED
+from account_classifier import CATEGORY_OF, PL_CATEGORIES, UNCLASSIFIED
 
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
+CONFIG_DIR = Path(__file__).resolve().parent / "config"
 MAPPINGS_FILE = CONFIG_DIR / "column_mappings.json"
 SETTINGS_FILE = CONFIG_DIR / "settings.json"
 

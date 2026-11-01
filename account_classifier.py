@@ -40,7 +40,7 @@ from pathlib import Path
 
 import pandas as pd
 
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
+CONFIG_DIR = Path(__file__).resolve().parent / "config"
 RULES_FILE = CONFIG_DIR / "classification_rules.json"
 OVERRIDES_FILE = CONFIG_DIR / "account_overrides.json"
 
