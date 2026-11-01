@@ -28,9 +28,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from utils import account_classifier as ac
-from utils import data_processing as dp
-from utils import report_generator as rg
+import account_classifier as ac
+import data_processing as dp
+import report_generator as rg
+import dashboard as db
+import dataclasses
 
 st.set_page_config(page_title="TB Financial Reporting Suite", page_icon="📊", layout="wide",
                    initial_sidebar_state="expanded")
@@ -51,7 +53,7 @@ div[data-testid="stMetricLabel"] p {font-size: 0.8rem; opacity: 0.8;}
 </style>
 """, unsafe_allow_html=True)
 
-PAGES = ["📤 Upload & Mapping", "🏷️ Account Classification", "✅ Data Validation",
+PAGES = ["📤 Upload & Mapping", "🏠 Executive Dashboard", "🏷️ Account Classification", "✅ Data Validation",
          "📑 Financial Reports", "📈 Management Reports", "⬇️ Export"]
 ROLE_ACTUAL, ROLE_BUDGET = "Actual", "Budget"
 
@@ -206,7 +208,9 @@ def units_label() -> str:
 # =========================================================================== #
 with st.sidebar:
     st.markdown("### 📊 TB Reporting Suite")
-    page = st.radio("Navigate", PAGES, label_visibility="collapsed")
+    if "goto_page" in ss:  # programmatic navigation must happen before the widget is created
+        ss["nav"] = ss.pop("goto_page")
+    page = st.radio("Navigate", PAGES, label_visibility="collapsed", key="nav")
     st.divider()
 
     ctx: rg.ReportContext | None = None
@@ -296,7 +300,8 @@ with st.sidebar:
                 st.warning("Fiscal-year settings changed - click **Process data** on the Upload page again.")
             run_pipeline()
             st.rerun()
-    st.caption("Settings, column mappings and classification rules are saved in the `config/` folder.")
+    st.caption("🔒 Uploaded files are processed in memory for this session only and are not saved. "
+               "Settings, column mappings and classification rules are saved in the `config/` folder.")
 
 
 # =========================================================================== #
@@ -486,6 +491,7 @@ or entered below.
                    f"{len(rg.available_periods(ss.ledger))} periods"
                    + (f" · budget rows {len(ss.bstd):,}" if ss.bstd is not None else "")
                    + (f" · ⚠️ {n_err} validation error(s) - see Data Validation" if n_err else ""))
+        ss["goto_page"] = PAGES[1]
         st.rerun()
 
     if has_data():
@@ -652,6 +658,127 @@ def page_validation():
                  hide_index=True, width="stretch")
 
 
+
+# =========================================================================== #
+# PAGE - Executive dashboard
+# =========================================================================== #
+def page_dashboard(c: rg.ReportContext, view: str, scope: str):
+    need_data()
+    st.markdown(db.KPI_CSS, unsafe_allow_html=True)
+    mm = db.monthly_metrics(c)
+    bm = db.monthly_metrics(c, c.budget) if c.budget is not None and not c.budget.empty else None
+    bal = db.monthly_balances(c)
+    ytd = rg.pl_metrics(rg.window_rows(c, "YTD"))
+    if bm is not None and not bm.empty:
+        comp = bm[bm["period"] <= c.period][["Revenue", "Gross Profit", "EBITDA", "PAT"]].sum().to_dict()
+        comp_label = "vs budget"
+    else:
+        pyr = rg.window_rows(c, "YTD", year=c.year - 1)
+        comp = rg.pl_metrics(pyr) if not pyr.empty else {}
+        comp_label = "vs last year"
+
+    def delta(k):
+        b = comp.get(k)
+        return (ytd[k] - b) / abs(b) if b else None
+
+    st.markdown(f'''<div class="hero"><h2>Executive Dashboard</h2>
+<p>{c.entity_label} · {c.cost_centre_label} · Year to date {c.as_at_label} · Amounts in {c.units_label}</p></div>''',
+                unsafe_allow_html=True)
+    pos = rg._position(c, c.year, c.period)
+    sp = lambda col, k: db.sparkline_svg(col[k].tolist(), db.SERIES[0]) if not col.empty else ""  # noqa: E731
+    cards = [
+        db.kpi_card("Revenue YTD", db.compact(ytd["Revenue"]), delta("Revenue"), comp_label, sp(mm, "Revenue")),
+        db.kpi_card("Gross profit YTD", db.compact(ytd["Gross Profit"]), delta("Gross Profit"), comp_label,
+                    sp(mm, "Gross Profit")),
+        db.kpi_card("EBITDA YTD", db.compact(ytd["EBITDA"]), delta("EBITDA"), comp_label, sp(mm, "EBITDA")),
+        db.kpi_card("Profit after tax YTD", db.compact(ytd["PAT"]), delta("PAT"), comp_label, sp(mm, "PAT")),
+        db.kpi_card("Cash & bank", db.compact(pos["Cash & Bank"]), sub=f"as at {c.as_at_label}",
+                    spark=sp(bal, "Cash")),
+        db.kpi_card("Net working capital", db.compact(pos["Total current assets"] - pos["Total current liabilities"]),
+                    sub=f"as at {c.as_at_label}", spark=sp(bal, "NWC")),
+    ]
+    st.markdown('<div class="kpi-grid">' + "".join(cards) + "</div>", unsafe_allow_html=True)
+    notes = db.insights(c, mm, bm)
+    if notes:
+        with st.expander("💡 Key observations", expanded=True):
+            for n in notes:
+                st.markdown(f'<div class="insight">{n}</div>', unsafe_allow_html=True)
+
+    a, b = st.columns([1, 1])
+    with a:
+        st.plotly_chart(db.fig_pl_waterfall(rg.pl_metrics(rg.window_rows(c, scope)),
+                                            f"Profit bridge — {rg.scope_label(c, scope)}"), width="stretch")
+    with b:
+        metric = st.segmented_control("Trend metric", ["Revenue", "Gross Profit", "EBITDA", "PAT"],
+                                      default="Revenue", key="dash_metric") or "Revenue"
+        if mm.empty:
+            st.info("No monthly data for the selected year.")
+        else:
+            ev = st.plotly_chart(db.fig_trend(mm, bm, metric, f"{metric} by month — click a bar to drill down"),
+                                 width="stretch", on_select="rerun", selection_mode="points", key="dash_trend")
+            pts = (ev or {}).get("selection", {}).get("points", []) if isinstance(ev, dict) else \
+                (ev.selection.points if ev is not None else [])
+            if pts:
+                lab = pts[0].get("x")
+                sel = mm.loc[mm["Period"] == lab, "period"]
+                if not sel.empty:
+                    st.session_state["dash_drill"] = int(sel.iloc[0])
+    drill = st.session_state.get("dash_drill")
+    if drill and drill <= c.period:
+        dc = dataclasses.replace(c, period=int(drill))
+        with st.container(border=True):
+            h1, h2 = st.columns([4, 1])
+            h1.markdown(f"#### 🔎 Drill-down: {c.label(c.year, drill)} — actual vs prior year"
+                        + (" and budget" if bm is not None else ""))
+            if h2.button("Close", key="close_drill", width="stretch"):
+                st.session_state.pop("dash_drill", None)
+                st.rerun()
+            dv = rg.variance_analysis(dc, "Month", "Line")
+            if (dv["Prior Year"].abs() < 0.5).all():  # no prior-year monthly data -> hide empty PY columns
+                dv = dv.drop(columns=["Prior Year", "Var vs PY", "Var vs PY %"])
+            show_statement(dv, pct_cols=("Var vs PY %", "Var vs Budget %"))
+            top = rg.top_n(dc, "Month", "Expense", 5)
+            if not top.empty:
+                st.caption("Top 5 costs this month: " + " · ".join(
+                    f"{r['Account Name']} {db.compact(r['Amount'])}" for _, r in top.iterrows()))
+
+    a, b = st.columns([1, 1])
+    with a:
+        st.plotly_chart(db.fig_expense_sunburst(rg.window_rows(c, scope),
+                                                f"Where the money goes — {rg.scope_label(c, scope)} (click to drill)"),
+                        width="stretch")
+    with b:
+        st.plotly_chart(db.fig_bs_treemap(c), width="stretch")
+
+    st.plotly_chart(db.fig_gauges(c), width="stretch")
+
+    hm_metric = st.segmented_control("Cost-centre view", ["Contribution", "Revenue", "Costs"], default="Contribution",
+                                     key="dash_hm") or "Contribution"
+    hm = db.fig_cc_heatmap(c, hm_metric)
+    if hm is not None:
+        st.plotly_chart(hm, width="stretch")
+    else:
+        st.caption("Cost-centre heatmap appears when the TB has a cost centre / department column.")
+
+    a, b = st.columns([1, 1])
+    with a:
+        if bm is not None and not bm.empty and not mm.empty:
+            vm = st.segmented_control("Budget variance for", ["Revenue", "Gross Profit", "EBITDA", "PAT"],
+                                      default="Revenue", key="dash_bv") or "Revenue"
+            st.plotly_chart(db.fig_budget_variance(mm, bm, vm), width="stretch")
+        elif not mm.empty:
+            st.plotly_chart(db.fig_margins(mm), width="stretch")
+    with b:
+        if not bal.empty:
+            st.plotly_chart(db.fig_cash(bal), width="stretch")
+    a, b = st.columns([1, 1])
+    with a:
+        if bm is not None and not mm.empty:
+            st.plotly_chart(db.fig_margins(mm), width="stretch")
+    with b:
+        if not bal.empty:
+            st.plotly_chart(db.fig_wc_days(c), width="stretch")
+
 # =========================================================================== #
 # PAGE 4 - Financial reports
 # =========================================================================== #
@@ -790,6 +917,8 @@ def page_management(c: rg.ReportContext, view: str, scope: str):
         if c.budget is None or c.budget.empty:
             st.caption("No budget loaded - upload a budget file (role = Budget) to add budget variances.")
         var = rg.variance_analysis(c, sc, level)
+        if (var["Prior Year"].abs() < 0.5).all() and "Budget" in var.columns:
+            var = var.drop(columns=["Prior Year", "Var vs PY", "Var vs PY %"])
         st.caption("Positive variance = favourable (higher income or lower cost).")
         pct = ("Var vs PY %", "Var vs Budget %")
         if level == "Line":
@@ -979,12 +1108,14 @@ def page_export(c: rg.ReportContext, view: str, scope: str):
 if page == PAGES[0]:
     page_upload()
 elif page == PAGES[1]:
-    page_classification()
+    page_dashboard(ctx, view, scope)
 elif page == PAGES[2]:
-    page_validation()
+    page_classification()
 elif page == PAGES[3]:
-    page_financial(ctx, view, scope)
+    page_validation()
 elif page == PAGES[4]:
+    page_financial(ctx, view, scope)
+elif page == PAGES[5]:
     page_management(ctx, view, scope)
 else:
     page_export(ctx, view, scope)
